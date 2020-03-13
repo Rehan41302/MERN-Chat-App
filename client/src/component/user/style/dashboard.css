@@ -1,0 +1,128 @@
+body{
+    overflow-x: hidden;
+
+}
+#topNavDash{
+    background-color: #673AB7;
+    height: 8vh;
+}
+
+#navLeft{
+    padding-left: 10px;
+    text-align: left;
+    color: #fff;
+}
+
+#navLeft h2{
+    font-weight: 400;
+    padding: 10px;
+    padding-left: 20px;
+}
+
+#navRight{
+    /* color: #fff; */
+}
+
+#navRight h5{
+    color: #fff;
+    font-weight: 400;
+    padding: 10px;
+    padding-right: 40px;
+    text-align: right;
+}
+
+#dashTopLeft{
+    background-color: #fff;
+}
+#dashUl li{
+    margin: 10px;
+    /* display: inline-block; */
+    list-style-type: none;
+    padding: 10px;
+    box-shadow: 2px 4px 10px 2px rgb(184, 177, 177);
+    border-radius: 8px;
+    text-align: left;
+    position: relative;
+
+}
+
+#innerLi{
+    position: absoluet;
+    top: 20px;
+    right: 0px;
+    text-align: right;
+    float: right;
+    background-color: #E91E63;
+    border-radius: 50%;
+    padding: 1px 8px;
+    color: #fff;
+}
+
+#dashUl li:hover{
+    margin: 10px;
+    /* display: inline-block; */
+    background-color: rgb(228, 228, 228);
+    list-style-type: none;
+    padding: 10px;
+    box-shadow: 2px 4px 10px 2px rgb(184, 177, 177);
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+#scroller{
+    overflow-y: scroll;
+    /* width: 5vh; */
+    height: 90vh;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  /* border-radius: 90px; */
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #fff; 
+
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #00796B; 
+  border-radius: 30px;
+
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
+
+#userInfo{
+    background-color: rgb(201, 198, 198);
+    width: 40vh;
+    height: 50vh;
+    float: right;
+    margin-right: 20px;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    align-items: center;
+    /* z-index: 9; */
+}
+
+#manageSetting{
+    border:1px solid #fff;
+    border-radius:10px;
+    padding: 10px;
+    transition: 0.6s ease-in-out;
+    
+}
+#manageSetting:hover,#manageSetting:hover a{
+    background-color: #6C757D;
+    border:1px solid #6C757D;
+    border-radius:10px;
+    padding: 10px;
+    color: white !important;
+    cursor: pointer;
+}

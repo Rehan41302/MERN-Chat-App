@@ -1,0 +1,105 @@
+#first{
+    background-color: #673AB7;
+    border-radius: 8px;    
+    margin: 10px;
+    position: relative;
+    height: 10vh;
+    cursor: pointer;
+    
+}
+.col-lg-3:hover  {
+    /* background-color: rgb(44, 44, 167) !important; */
+    /* opacity: 0.9; */
+    /* cursor: pointer !important; */
+}
+
+#secnd{
+   
+    border-radius: 10px;    
+    background-color: #009688;
+    position: relative;
+    margin: 10px;
+    height: 10vh;
+
+}
+#third{
+    border-radius: 10px;    
+    background-color: #E91E63;
+    position: relative;
+    margin: 10px;
+    height: 10vh;
+
+}
+
+#finner{
+    position: absolute;
+    /* height: 70vh !important; */
+    padding-bottom: 100px;
+    /* padding: 10px; */
+
+}
+
+#finner h4{
+    /* height: 40px !important; */
+    /* margin: 10px; */
+    color: #fff;
+    margin-bottom: 0px;
+    padding-top: 10px;
+    /* text-align: ; */    
+}
+
+#sinner h4{
+    margin: 10px;
+    color: #fff;
+}
+
+#tinner h5{
+    margin: 10px;
+    color: #fff;
+}
+
+#first1{
+    background-color: #2F2FA2;
+    border-radius: 10px;    
+    margin: 10px;
+    position: relative;
+    height: 10vh;
+
+}
+
+#secnd1{
+    border-radius: 10px;    
+    background-color: #00796B;
+    position: relative;
+    margin: 10px;
+    height: 10vh;
+
+}
+#third1{
+    border-radius: 10px;    
+    background-color: #880E4F;
+    position: relative;
+    margin: 10px;
+    height: 10vh;
+
+}
+
+#first1 >div > h4{
+    margin-top: 5px;
+    margin-left: 0px;
+    color: #fff;
+
+}
+
+#secnd1 >div > h5{
+    margin-top: 5px;
+    margin-left: 0px;
+    color: #fff;
+
+}
+#third1 >div > h4{
+    color: #fff;
+    margin-top: 5px;
+    margin-left: 0px;
+
+}
