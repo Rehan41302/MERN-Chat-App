@@ -2,7 +2,7 @@ import React, {Component,Lazy,Suspense} from 'react';
 // import 
 //  {getProducts}
 //   from "../actions/productsAction";
-  
+import PrivateRoute from "../component/private-route/PrivateRoute";  
 import {BrowserRouter ,Route, Switch} from 'react-router-dom';
 // import {connect} from 'react-redux'
 // import jwt_decode from "jwt-decode";
@@ -33,7 +33,7 @@ if (localStorage.jwtToken) {
       // Logout user
       store.dispatch(logoutUser());
       // Redirect to login
-      window.location.href = "./combined";
+      window.location.href = "/";
     }
   }
 
@@ -76,7 +76,7 @@ render(){
             {/* <Navbar/> */}
             <Switch>
               <Route exact path='/' component={Login} />
-              <Route path='/user/dashboard/' component={Dashboard} />
+              <PrivateRoute path='/user/dashboard/' component={Dashboard} />
             </Switch>
             {/* <Footer /> */}
            </BrowserRouter>    

@@ -1,5 +1,6 @@
 import React, {Component,Lazy,Suspense} from 'react';
 import {Redirect, BrowserRouter,Route,Switch,Link} from 'react-router-dom'
+import {logoutUser} from '../../actions/authActions'
 import './style/dashboard.css'
 import user from '../images/admin.png'
 import db from '../images/db.png'
@@ -17,14 +18,23 @@ import bc from '../images/bc.png'
 import UserDashboard from './userDashboard'
 import Broadcast from './broadcast'
 import Setting from './setting'
+import { connect } from 'react-redux';
 
  class Dashboard extends Component{
 
   state={
     loading:true,
     email:'',
-    show:false
+    show:false,
+
   }
+  onLogoutClick = e => {
+    e.preventDefault();
+    this.props.logoutUser();
+  };
+
+
+  
 
 passwordToggle(e){
     e.preventDefault()
@@ -36,8 +46,8 @@ passwordToggle(e){
 
 render(){
    
+  const user=this.props.auth.user
   return (
-    
         <  >
            <BrowserRouter>
            <div className='row' id='topNavDash' >
@@ -51,8 +61,8 @@ render(){
                   <div class="collapse" id="collapseExample">
                     <div class="" id='userInfo' >
                       <img src={u2} width='80' height='80' style={{marginTop:'20px'}} />
-                      <h5 style={{textAlign:'center',color:'black',marginLeft:'20px'}}>Muhammad Arslan</h5>
-                      <p>user2@gmail.com</p>
+                      <h5 style={{textAlign:'center',color:'black',marginLeft:'20px'}}>{user.name}</h5>
+                      <p>{user.email}</p>
                       <div  id='manageSetting' >
                           <Link to='/user/setting' style={{textDecoration:'none',color:'black'}} >  <h6
                           data-toggle="collapse" data-target="#collapseExample"
@@ -63,7 +73,7 @@ render(){
                     // data-toggle="collapse" data-target="#collapseExample"
                     // aria-expanded="false" aria-controls="collapseExample"
                     style={{marginTop:'10vh',position:'relative',bottom:'0px'}} 
-                    onClick={() => { this.props.history.push('/') } }
+                    onClick={this.onLogoutClick.bind(this) }
                     className='btn btn-info btn-block' > Sign out </button>
 
                     </div>
@@ -104,13 +114,14 @@ render(){
  }
 }
 
-// const mapStateToProps = (state) =>{
-//   // var array= Array.from(state.products.cartProducts)
-//   console.log("Reducer check cart prod.............", state.cartReducer.totalPrice)
-//   return{ 
-//       pathChecker: state.products.pathChecker,
+const mapStateToProps = (state) =>{
+  console.log("Reducer check Auth prod.............", state.auth)
+  return{ 
+      auth: state.auth,
      
-//   }
-// }
+  }
+}
 
-export default Dashboard
+export default connect(
+  mapStateToProps,{logoutUser}
+)(Dashboard)
