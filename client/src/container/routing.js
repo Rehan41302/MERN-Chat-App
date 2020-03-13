@@ -1,10 +1,10 @@
 import React, {Component,Lazy,Suspense} from 'react';
-// import 
-//  {getProducts}
-//   from "../actions/productsAction";
+import 
+ {getChats}
+  from "../actions/chatAction";
 import PrivateRoute from "../component/private-route/PrivateRoute";  
 import {BrowserRouter ,Route, Switch} from 'react-router-dom';
-// import {connect} from 'react-redux'
+import {connect} from 'react-redux'
 // import jwt_decode from "jwt-decode";
 import jwt_decode from "jwt-decode";
 import setAuthToken from "../utils/setAuthToken";
@@ -20,6 +20,8 @@ export const socket = socketIOClient("https://secret-brook-13268.herokuapp.com")
 
 // Check for token to keep user logged in
 if (localStorage.jwtToken) {
+
+  socket.emit("view-chats");
     // Set auth token header auth
     const token = localStorage.jwtToken;
     setAuthToken(token);
@@ -57,6 +59,7 @@ if (localStorage.jwtToken) {
 
 
 render(){
+  this.props.getChats()
 //  console.log('routing ka render==---->',this.props)
 // this.props.getProducts('Routing')
 //   // const information = window.location.pathname='/information'
@@ -85,13 +88,15 @@ render(){
  }
 }
 
-const mapStateToProps = (state) =>{
-  // var array= Array.from(state.products.cartProducts)
-  console.log("Reducer check cart prod.............", state.cartReducer.totalPrice)
-  return{ 
-      pathChecker: state.products.pathChecker,
+// const mapStateToProps = (state) =>{
+//   // var array= Array.from(state.products.cartProducts)
+//   console.log("Reducer check cart prod.............", state.cartReducer.totalPrice)
+//   return{ 
+//       pathChecker: state.products.pathChecker,
      
-  }
-}
+//   }
+// }
 
-export default Routes
+export default connect(
+  null,{getChats}
+)(Routes)

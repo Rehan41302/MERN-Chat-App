@@ -26,15 +26,12 @@ import { connect } from 'react-redux';
     loading:true,
     email:'',
     show:false,
-
+    leftResp:false,
+    newMessage:0,
+    final:0,
+    toggle:true,
+    currentUser:undefined
   }
-  onLogoutClick = e => {
-    e.preventDefault();
-    this.props.logoutUser();
-  };
-
-
-  
 
 passwordToggle(e){
     e.preventDefault()
@@ -44,10 +41,61 @@ passwordToggle(e){
     console.log('hoa clck')
 }
 
+broadcastRes(){
+  this.setState({
+    leftResp:true
+  })
+}
+
+onLogoutClick = e => {
+  e.preventDefault();
+  this.props.logoutUser();
+};
+
+componentDidMount(){
+  if(this.props.auth.user){
+    this.setState({
+      currentUser:this.props.auth.user
+    })
+  }
+}
+
+//WARNING! To be deprecated in React v17. Use new lifecycle static getDerivedStateFromProps instead.
+UNSAFE_componentWillReceiveProps(nextProps) {
+let newMessage = this.state.newMessage;
+if(nextProps.chats){
+  console.log('dashboard ka will=>',nextProps.chats)
+    let myId = this.state.currentUser.id
+    let newLength = nextProps.chats.length;  
+    let lastPerson = nextProps.chats[newLength-1]
+    if(newLength!==newMessage){
+      let final = newLength-newMessage 
+        if(newMessage==0 || lastPerson.id==myId ){
+         final=0 
+        }
+
+        // newMessage= this.state.newMessage.length
+        // let final = newLength-newMessage;
+        this.setState({
+          newMessage:newLength,
+          final: final,
+          toggle:false
+        })
+        console.log(final,'new wala')
+    }
+
+  }
+}
 render(){
-   
-  const user=this.props.auth.user
+  let filtered=[];
+   if(this.props.chats){
+      filtered = this.props.chats.filter(e => {
+        return e.id !== this.props.auth.user.id
+      }) 
+      console.log(filtered,this.props.auth.user.id)
+   }
   return (
+    
         <  >
            <BrowserRouter>
            <div className='row' id='topNavDash' >
@@ -61,8 +109,8 @@ render(){
                   <div class="collapse" id="collapseExample">
                     <div class="" id='userInfo' >
                       <img src={u2} width='80' height='80' style={{marginTop:'20px'}} />
-                      <h5 style={{textAlign:'center',color:'black',marginLeft:'20px'}}>{user.name}</h5>
-                      <p>{user.email}</p>
+                      <h5 style={{textAlign:'center',color:'black',marginLeft:'20px'}}>{this.props.auth.user ? this.props.auth.user.name:void 0}</h5>
+                      <p>{this.props.auth.user ? this.props.auth.user.email:void 0}</p>
                       <div  id='manageSetting' >
                           <Link to='/user/setting' style={{textDecoration:'none',color:'black'}} >  <h6
                           data-toggle="collapse" data-target="#collapseExample"
@@ -73,7 +121,7 @@ render(){
                     // data-toggle="collapse" data-target="#collapseExample"
                     // aria-expanded="false" aria-controls="collapseExample"
                     style={{marginTop:'10vh',position:'relative',bottom:'0px'}} 
-                    onClick={this.onLogoutClick.bind(this) }
+                    onClick={this.onLogoutClick.bind(this)  }
                     className='btn btn-info btn-block' > Sign out </button>
 
                     </div>
@@ -81,12 +129,16 @@ render(){
               </div>
            </div>
 
-           <div className='row' >
-              <div className='col-lg-4' id='dashTopLeft' >
+           <div className='row' id='responsive' >
+              <div className='col-lg-4 col-xs-4' id={this.state.leftResp===true ? 'dashTopLeft': void 0} >
               <div id='scroller' >
                 <ul id='dashUl' >
                 <Link style={{textDecoration:'none', color:'black'}} to='/user/dashboard' > <li>   <img src={db} width='40' height='40' style={{margin: '10px'}} /> Dashboard  </li> </Link>
-                  <Link style={{textDecoration:'none', color:'black'}} to='/user/broadcast' > <li>  <img src={bc} width='40' height='40' style={{margin: '10px'}} /> Broadcast    <span id='innerLi' > 1 </span> </li> </Link> 
+                  <Link style={{textDecoration:'none', color:'black'}} to='/user/broadcast' > <li onClick={this.broadcastRes.bind(this)} >
+                    <img src={bc} width='40' height='40' style={{margin: '10px'}} /> Broadcast 
+                     <span id='innerLi' > {
+                      this.state.final!=0 ? this.state.final : void 0 
+                      } </span> </li> </Link> 
                   <Link style={{textDecoration:'none', color:'black'}} to='/user/broadcast' >  <li> <img src={user} width='40' height='40' style={{margin: '10px'}} /> user 1</li> </Link>
                   <li> <img src={u1} width='40' height='40' style={{margin: '10px'}} />user 2</li>
                   <li><img src={u2} width='40' height='40' style={{margin: '10px'}} /> user 3</li>
@@ -100,7 +152,7 @@ render(){
                 </ul>
               </div>
               </div>
-              <div className='col-lg-8' >
+              <div className='col-lg-8 col-xs-8' id='dashTopRight'>
                   <Switch>
                     <Route path='/user/dashboard' exact component={UserDashboard} />
                     <Route exact path='/user/broadcast' component={Broadcast} />
@@ -115,9 +167,10 @@ render(){
 }
 
 const mapStateToProps = (state) =>{
-  console.log("Reducer check Auth prod.............", state.auth)
+  console.log("Reducer check Auth prod.............", state)
   return{ 
       auth: state.auth,
+      chats:state.chatReducer.chat,
      
   }
 }

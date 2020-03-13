@@ -1,6 +1,8 @@
 import React, {Component,Lazy,Suspense} from 'react';
 import {Redirect, BrowserRouter,Route,Switch} from 'react-router-dom'
+import { HashLink } from 'react-router-hash-link';
 import smsg from '../images/smsg.png'
+import down from '../images/down.png'
 import './style/broadcast.css'
 import {getChats} from '../../actions/chatAction'
 import { connect } from 'react-redux';
@@ -19,6 +21,9 @@ import {socket} from '../../container/routing'
         name:'',
         image:undefined,
         file:undefined,
+        targeted:false,
+        arrow:true,
+        enterArrow:true
     }
     
 }
@@ -35,9 +40,10 @@ this.setState({
 }
     
     this.props.getChats();
-    if(this.props.chat){
+    if(this.props.chats){
       this.setState({
-        chats:this.props.chat
+        chats:this.props.chats,
+        targeted:true,
       })
     }
     
@@ -72,10 +78,37 @@ componentWillReceiveProps(nextProps){
   //     }
   // })
 }
-
-onSend(e){
+onEnter = (e) => {
+  this.setState({
+    enterArrow:false
+  })
+  console.log(e.keyCode)
+  if(e.keyCode == 13 && e.shiftKey == false) {
+    e.preventDefault();
+    // this.myFormRef.submit();
+    var data={
+      name:this.state.user.name,
+      id:this.state.user.id,
+      message:this.state.message,
+      image:this.state.image
+  }
+  
+  socket.emit("Chat",data)
+  const rawChat= this.state.chats
+    rawChat.push(data)
+  this.setState({message:'',chats:rawChat})
+  }
+//   if(e.keyCode == 18){
+//       return  (
+//       <HashLink to='/user/broadcast#target' >
+// adadda
+//       </HashLink>)
+    
+//   }
+}
+onSend=(e)=>{
   e.preventDefault();
-
+console.log('form sy',e.keyCode)
   var data={
       name:this.state.user.name,
       id:this.state.user.id,
@@ -111,14 +144,16 @@ console.log(e.target.files)
 
 
   imagePicker(){
-    this.refs.fileUploader.click();
+    this.refs.fileUploader.click()
     this.setState({
         imagePicker: true
     })
 }
 render(){
+  console.log(this.state)
+ 
   if(!this.state.user){
-   return <h1>loadind...</h1>
+   return <h1>loading...</h1>
   }
   else{
     const {id,name} = this.state.user
@@ -150,29 +185,55 @@ render(){
                                       <div>
                                         {item.id==id? <div id='sender' className='col-12' >
                                           <p  id='sendtext' >{item.message}</p>
+                                            {index===chats.length-1  ? <span id='target' ></span> :void 0  }
+                                            {/* { this.state.chats!==undefined  ? index===chats.length-1 ? <span id='target' >  sdf </span> :<p>pehla</p>  : <p>dusra</p> } */}
+                                           {/* {this.state.targeted} */}
+                                        
                                           </div>
-                                       :<div id='receiver'>
-                                         <p  id='rectext'> {item.message} </p>
+                                       :<div id='receiver '  >
+                                          <span  > 
+                                         <p style={{fontWeight:600,marginBottom:'0px',marginTop:'20px'}} >   {item.name} </p>
+
+                                          </span>
+                                         <p style={{color:'#fff'}} id='rectext'> {item.message} </p>
+                                         {index===chats.length-1 ? <span id='target' ></span> :void 0  }                                         
+                                         {/* { this.state.chats!==undefined  ? index===chats.length-1 ? <span id='target' >  sdf </span> : <p>pehla</p>  : <p>dusra</p> } */}
+                                         {/* {this.props.chats?this.props.chats.length-1 :void 0} */}
+                                         {/* {index} */}
                                         </div>
                                        }
+                                         {/* { chats.length-1 ? <span id='target' style={{position:'relative',bottom:'0px'}} >  sdf </span> : <p>pehla</p>   } */}
                                       </div>
  
                      )
                    }) 
-                  :<h1>Loading...</h1> }<div id=''></div>
+                  :<h1>Loading...</h1> }
+                  
+                  {this.state.arrow !== false && (this.state.enterArrow!==false)?
+                    <HashLink  smooth to='/user/broadcast#target' onClick={() => {this.setState({ arrow:false })} } >                    
+                  <div  id='downArrow'  >
+                      <img src={down} width='60' height='60' />  
+                  </div>
+                    </HashLink>
+                    : void 0}
                      </div>
                   </div>
-                  <div id='' >
+                  <div  >
+                  {/* <a >sdsd</a> */}
+
                     <h1></h1>
-                  </div>                 
+                  </div>              
+
                 </div>
- 
                  <div id='innerBottom' >
-                   
                    <div className='row' >                   
                      <div className='col-10' id='inputDiv' >
- 
-                     <input  value={this.state.message} name='message' onChange={this.onChange.bind(this)}  type='text' id='textField' placeholder='Start Message' />
+                    <form ref={el => this.myFormRef = el} >
+                      <HashLink smooth to='/user/broadcast#target' >     
+
+                     <input onKeyDown={this.onEnter} value={this.state.message} name='message' onChange={this.onChange.bind(this)}  type='text' id='textField' placeholder='Start Message' />
+                     </HashLink>>
+                    </form>
  
                      <img src={smsg} width='20' height='20' id='gallery' onClick={this.imagePicker.bind(this)} />
  
@@ -180,7 +241,12 @@ render(){
  
                      </div>
                      <div className='col-2' style={{textAlign:'left'}}  >
-                       <img style={{marginTop:'10px',textAlign:'left',marginLeft:'20px',cursor:'pointer'}} src={smsg} width='40' height='40' onClick={this.onSend.bind(this)} />
+                       {!this.state.message ? void 0
+                       :
+                       (<HashLink smooth to='/user/broadcast#target' >     
+                          <img  onClick={this.onSend} style={{marginTop:'10px',textAlign:'left',marginLeft:'20px',cursor:'pointer'}} src={smsg} width='40' height='40'  />
+                       </HashLink>)
+                          }
                      </div>
                    </div>
                  </div>

@@ -126,3 +126,77 @@ body{
     color: white !important;
     cursor: pointer;
 }
+
+#downArrow{
+    background-color: #673AB7;
+    border-radius: 50%;
+    position: fixed;
+    z-index: 9;
+    bottom: 10vh;
+    right: 6vw;
+}
+
+@media only screen and (max-width: 411px) {
+
+    #navLeft h2{
+        font-size: 2px;
+        /* margin-left: 40px; */
+        /* margin-top: 10px; */
+    
+    }
+    #navRight h5 img{
+        margin-top: -4px;
+        margin-right: -20px;
+        width: 40px;
+        height: 40px;
+    }
+    #topNavDash{
+        width: 100%;
+    }
+    #dashTopLeft{
+        display: none;
+    }
+    #dashTopRight{
+        
+    }
+}
+@media only screen and (max-width: 768px) {
+
+    #navLeft h2{
+        font-size: 22px;
+        margin-left: 40px;
+        margin-top: 10px;
+    
+    }
+    /* #navRight h5 img{
+        margin-top: -4px;
+        margin-right: -20px;
+        width: 80px;
+        height: 80px;
+    } */
+    #topNavDash{
+        width: 100%;
+    }
+}
+@media only screen and (min-width: 768px) {
+
+    #responsive{
+
+        /* display: none; */
+    }
+     #navLeft h2{
+        /* font-size: 10px; */
+        /* margin-left: 40px; */
+        /* margin-top: 20px; */
+    
+    } 
+    /* #navRight h5 img{
+        margin-top: -4px;
+        margin-right: -20px;
+        width: 80px;
+        height: 80px;
+    } */
+    #topNavDash{
+        width: 100%;
+    } 
+}
