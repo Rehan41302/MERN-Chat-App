@@ -8,11 +8,13 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const userController = require('./controllers/user_controller')
+const chatsController = require('./controllers/chatsController')
 
 
 
 const socketIO = require("socket.io");
 const {Chats} = require("./models/chat")
+const {PrivateChats} = require('./models/privateChats')
 // const passport = require("passport");
 
 
@@ -88,10 +90,11 @@ app.use(cors());
 //        SOCKET IO WORKING......      //
 //=====================================//
 
-
+var users={}
 io.on("connection", socket => {
+  
   console.log("New client connected" + socket.id);
-
+  // console.log('socket users===',io.sockets.sockets)
   socket.on("Chat", (data) => {
       console.log('initial data called by client=====',data)
          
@@ -108,6 +111,25 @@ io.on("connection", socket => {
      
 
    });
+   exports.func1 = function (){
+       console.log('called vew pvt==///');
+        socket.emit("call_pvt_data")
+     }
+  //   {func1:function (){
+  //    console.log('called vew pvt==///');
+  //     socket.emit("call_pvt_data")
+  //  }}
+
+   socket.on("get_pvt_chats",(id)=>{
+     console.log('Pvt called==>>>',id)
+     PrivateChats.find().exec((err,data)=>{
+        if (err){return console.log('Not found ', err.message)}
+        else {
+         console.log('pvt data',data)
+          io.sockets.emit("pvt_chats",data)
+        }
+      })
+   })
    socket.on("view-chats",()=>{
       viewChats()
   })
@@ -181,6 +203,8 @@ setTimeout(()=>{
         // );
 
          app.post('/api/login',userController.login);
+         app.get('/api/users',userController.getUsers);
+         app.post('/api/privateMessage',chatsController.privateMessage);
 
     
 

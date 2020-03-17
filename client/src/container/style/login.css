@@ -19,3 +19,93 @@
     justify-content: center;    
     /* align-items: center; */
 }
+@media only screen and (width: 411px) {
+    #topBanner{
+        /* display: none; */
+        /* background-image: url('../../component/images/'); */
+    }
+    #loginInner{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        top: 0px;
+        left: 0px;
+        width: 100%;
+        height: 100vh;
+    }
+
+    #eye{
+        padding-top: 4px !important;
+        /* display: inline; */
+    }
+ 
+}
+
+@media only screen and (max-width: 768px) {
+    #topBanner{
+        /* display: none; */
+    }
+    #loginInner{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        top: 0px;
+        left: 0px;
+        width: 100%;
+        height: 100vh;
+    }
+
+    #eye{
+        padding-top: 5px ;
+    }
+ 
+}
+
+@media only screen and (width: 1024px) {
+    #topBanner{
+        /* display: none; */
+    }
+    #loginInner{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        top: 0px;
+        left: 0px;
+        width: 100%;
+        height: 100vh;
+    }
+
+    #eye{
+        margin-top: -40px ;
+    }
+ 
+}
+
+@media only screen and (width: 375px) {
+    #topBanner{
+        /* display: none; */
+    }
+    #loginInner{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        top: 0px;
+        left: 0px;
+        width: 100%;
+        height: 100vh;
+    }
+
+    #eye{
+        margin-top: -10px ;
+    }
+ 
+}
+
+@media only screen and (min-width: 768px) {
+
+    
+}

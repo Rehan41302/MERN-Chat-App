@@ -5,11 +5,11 @@ import smsg from '../images/smsg.png'
 import down from '../images/down.png'
 import gallery from '../images/gallery.png'
 import './style/broadcast.css'
-import {getChats} from '../../actions/chatAction'
+import {getChats,privateMessage} from '../../actions/chatAction'
 import { connect } from 'react-redux';
 import {socket} from '../../container/routing'
 
- class Broadcast extends Component{
+ class PvtChat extends Component{
 
 
   constructor(Props){
@@ -20,35 +20,66 @@ import {socket} from '../../container/routing'
         chats:undefined,
         user:undefined,
         name:'',
+        chat:undefined,
         image:undefined,
         file:undefined,
         targeted:false,
         arrow:true,
-        enterArrow:true
+        enterArrow:true,
+        receiverId:undefined,
+        receiverName:undefined,
     }
-    
+    console.log('Constructor=====')
 }
 
 
-  componentDidMount(){
-socket.emit("view-chats");
-if (this.props.auth.isAuthenticated) {
+
+componentDidMount(){
+  console.log('didmount pvt')
+    socket.emit("view-chats");
+    if (this.props.auth.isAuthenticated) {
+            if(this.props.AllUsers){
+                let receiverId=this.props.match.params.id
+                console.log('pparams id===>>>',receiverId,this.props.match.params)
+                let filtered=this.props.AllUsers.filter(e=>{
+                    return e._id==receiverId
+                })
+                console.log('filtered=====',filtered)
+                if(filtered.length!==0){
+                  if(this.props.pvtChats){
+                    const filterChats = this.props.pvtChats.chats.filter(e=>{return e.receiverName==filtered[0].name})
+                    if(filterChats.length!=0){
+                      console.log('nextpvtflter',filterChats[0])
+                      this.setState({
+                        receiverId,
+                        receiverName:filtered[0].name,
+                        chats:filterChats[0]
+                      })
+                    }
+                  }
+                }
+            }
   console.log("Login Didmount Props", this.props)
 this.setState({
   auth: true,
   user: this.props.auth.user
 })
 }
-    
-    this.props.getChats();
-    if(this.props.chats){
-      this.setState({
-        chats:this.props.chats,
-        targeted:true,
-      })
-    }
-    
-     // console.log('Chat data=-=-=-=-=-=',data[0].message)
+// if(this.props.pvtChats){
+//   const filterChats = this.props.pvtChats.chats.filter(e=>{return e.receiverName===filtered[0].name})
+//   this.setState({
+//     chats:this.props.pvtChats,
+//     targeted:true,
+//   })
+//  }
+    // this.props.getChats();
+    // if(this.props.chats){
+    //   this.setState({
+    //     chats:this.props.chats,
+    //     targeted:true,
+    //   })
+    // }
+
      
      
 
@@ -61,23 +92,39 @@ this.setState({
 })
 }
 componentWillReceiveProps(nextProps){
+  console.log('will receive pvt')
   if(nextProps){
-    if(nextProps.chats){
-      console.log(nextProps.chats)
+    if(nextProps.AllUsers||this.props.AllUsers){
+      let receiverId=nextProps.match.params.id
+      console.log('pparams id===>>>',receiverId)
+      let filtered=nextProps.AllUsers.filter(e=>{
+          return e._id==receiverId
+      })
+      console.log('Nextfiltered=====',filtered)
+      if(filtered.length!==0){
+        if(nextProps.pvtChats){
+          const filterChats = nextProps.pvtChats.chats.filter(e=>{return e.receiverName===filtered[0].name})
+          if(filterChats.length!=0){
+            console.log('nextpvtflter',filterChats[0])
+            this.setState({
+              receiverId,
+              receiverName:filtered[0].name,
+              chats:filterChats[0]
+            })
+          }
+          else{
+            this.setState({
+              receiverId:undefined,
+              receiverName:undefined,
+              chats:undefined
+            })
+          }
+        }
+      }
       
-        this.setState({
-          chats:nextProps.chats
-        })
-    }
   }
-  // socket.on("get_chats",(data)=>{
-  //     console.log('Chat data=-=-=-=-=-=',data[0].message)
-  //     if(data){
-  //         this.setState({
-  //             chats:data
-  //         })
-  //     }
-  // })
+  }
+ 
 }
 
 onEnter = (e) => {
@@ -87,33 +134,51 @@ onEnter = (e) => {
   // console.log(e.keyCode)
   if(e.keyCode == 13 && e.shiftKey == false) {
     e.preventDefault();
-    // this.myFormRef.submit();
-    var data={
-      name:this.state.user.name,
-      id:this.state.user.id,
-      message:this.state.message,
-      image:this.state.image
-  }
-  
-  socket.emit("Chat",data)
-  const rawChat= this.state.chats
-    rawChat.push(data)
-  this.setState({message:'',chats:rawChat})
+
+        const {id,name}=this.props.user
+        const { receiverId, receiverName, message }=this.state
+        let data={
+                senderName:name,
+                senderId:id,
+                receiverName,
+                receiverId,
+                message,
+        }
+        this.props.privateMessage(data);
+        var prev = this.state.chats
+        prev.messages.push({name:this.state.user.name,message:this.state.message})
+        this.setState({
+          message:'',
+          chats:prev
+        })
+
   }
 }
 onSend=(e)=>{
   e.preventDefault();
 console.log('form sy',e.keyCode)
-  var data={
-      name:this.state.user.name,
-      id:this.state.user.id,
-      message:this.state.message,
-      image:this.state.image
-  }
-  socket.emit("Chat",data)
-  const rawChat= this.state.chats
-    rawChat.push(data)
-  this.setState({message:'',chats:rawChat})
+
+
+        const {id,name}=this.props.user
+        const { receiverId, receiverName, message }=this.state
+        let data={
+                senderName:name,
+                senderId:id,
+                receiverName,
+                receiverId,
+                message,
+        }
+        this.props.privateMessage(data);
+        var prev = this.state.chats
+        prev.messages.push({name:this.state.user.name,message:this.state.message})
+        this.setState({
+          message:'',
+          chats:prev
+        })
+        
+
+
+
 
 }
 imageOnChange=(e)=>{
@@ -145,9 +210,11 @@ console.log(e.target.files)
     })
 }
 render(){
+    console.log('render-----')
   console.log(this.state)
  
-  if(!this.state.user){
+  if(!this.state.user||!this.props.AllUsers||!this.state.chats){
+    console.log(this.state.user,this.props.AllUsers,this.state.chats)
    return <h1>loading...</h1>
   }
   else{
@@ -175,10 +242,10 @@ render(){
                     {/* Reciever Section */}
                      <div id='' >
                       {this.state.chats?
-                                 this.state.chats.map((item,index)=>{
+                                 this.state.chats.messages.map((item,index)=>{
                                      return(
                                       <div id='messTop' >
-                                        {item.id==id?
+                                        {item.name==name?
                                          <div id='sender' className='col-12' >
                                           <p  id='sendtext' >{item.message}</p>
                                             {index===chats.length-1  ? <span id='target' ></span> :void 0  }
@@ -247,10 +314,13 @@ const mapStateToProps = (state) => {
   console.log('Current State===>>>',state)
   return{
    chats:state.chatReducer.chat,
-   auth:state.auth
+   auth:state.auth,
+   user:state.auth.user,
+   AllUsers:state.chatReducer.users,
+   pvtChats:state.chatReducer.pvtChats
   }
 }
 
 export default connect(
-  mapStateToProps,{getChats}
-)(Broadcast)
+  mapStateToProps,{getChats,privateMessage}
+)(PvtChat)

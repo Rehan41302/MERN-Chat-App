@@ -1,6 +1,7 @@
 import React, {Component,Lazy,Suspense} from 'react';
 import {Redirect, BrowserRouter,Route,Switch,Link} from 'react-router-dom'
 import {logoutUser} from '../../actions/authActions'
+import {getPvtMessages} from '../../actions/chatAction'
 import './style/dashboard.css'
 import user from '../images/admin.png'
 import db from '../images/db.png'
@@ -16,9 +17,11 @@ import u9 from '../images/u9.png'
 import u10 from '../images/u10.png'
 import bc from '../images/bc.png'
 import UserDashboard from './userDashboard'
+import PvtChat from '../user/pvtChat'
 import Broadcast from './broadcast'
 import Setting from './setting'
 import { connect } from 'react-redux';
+import {socket} from '../../container/routing'
 
  class Dashboard extends Component{
 
@@ -54,8 +57,21 @@ onLogoutClick = e => {
 
 componentDidMount(){
   if(this.props.auth.user){
+    console.log(this.props)
+    socket.on("call_pvt_data",()=>{
+      // console.log('called pvt chat===///',this.props.auth.user.id)
+      socket.emit("get_pvt_chats");
+      this.props.getPvtMessages(this.props.auth.user.id);  
+    })
+    socket.emit("get_pvt_chats");
+    this.props.getPvtMessages(this.props.auth.user.id);
     this.setState({
       currentUser:this.props.auth.user
+    })
+  }
+  if(this.props.users){
+    this.setState({
+      users:this.props.users
     })
   }
 }
@@ -63,8 +79,13 @@ componentDidMount(){
 //WARNING! To be deprecated in React v17. Use new lifecycle static getDerivedStateFromProps instead.
 UNSAFE_componentWillReceiveProps(nextProps) {
 let newMessage = this.state.newMessage;
+if(nextProps.users){
+  this.setState({
+    users:nextProps.users
+  })
+}
 if(nextProps.chats){
-  console.log('dashboard ka will=>',nextProps.chats)
+  console.log('dashboard ka will=>',nextProps)
     let myId = this.state.currentUser.id
     let newLength = nextProps.chats.length;  
     let lastPerson = nextProps.chats[newLength-1]
@@ -88,6 +109,7 @@ if(nextProps.chats){
 }
 render(){
   let filtered=[];
+  let {users} = this.state
    if(this.props.chats){
       filtered = this.props.chats.filter(e => {
         return e.id !== this.props.auth.user.id
@@ -130,7 +152,7 @@ render(){
            </div>
 
            <div className='row' id='responsive' >
-              <div className='col-lg-4 col-xs-4' id={this.state.leftResp===true ? 'dashTopLeft': void 0} >
+              <div className='col-lg-4 col-xs-12 col-xs-12' id={this.state.leftResp===true ? 'dashTopLeft': void 0} >
               <div id='scroller' >
                 <ul id='dashUl' >
                 <Link style={{textDecoration:'none', color:'black'}} to='/user/dashboard' > <li>   <img src={db} width='40' height='40' style={{margin: '10px'}} /> Dashboard  </li> </Link>
@@ -139,16 +161,14 @@ render(){
                      <span id='innerLi' > {
                       this.state.final!=0 ? this.state.final : void 0 
                       } </span> </li> </Link> 
-                  <Link style={{textDecoration:'none', color:'black'}} to='/user/broadcast' >  <li> <img src={user} width='40' height='40' style={{margin: '10px'}} /> user 1</li> </Link>
-                  <li> <img src={u1} width='40' height='40' style={{margin: '10px'}} />user 2</li>
-                  <li><img src={u2} width='40' height='40' style={{margin: '10px'}} /> user 3</li>
-                  <li><img src={u3} width='40' height='40' style={{margin: '10px'}} /> user 4</li>
-                  <li><img src={u4} width='40' height='40' style={{margin: '10px'}} /> user 5</li>
-                  <li><img src={u5} width='40' height='40' style={{margin: '10px'}} /> user 6</li>
-                  <li><img src={u6} width='40' height='40' style={{margin: '10px'}} />user 7</li>
-                  <li><img src={u7} width='40' height='40' style={{margin: '10px'}} />user 8</li>
-                  <li><img src={u8} width='40' height='40' style={{margin: '10px'}} />user 9</li>
-                  <li><img src={u9} width='40' height='40' style={{margin: '10px'}} />user 10</li>
+                  {users?
+                  users.map(user=>{
+                  return (
+                    <Link style={{textDecoration:'none', color:'black'}} to={`/user/${user._id}`} >  <li> <img src={u1} width='40' height='40' style={{margin: '10px'}} />{user.name}</li> </Link>
+                  )
+                  })
+                    :void 0 }
+                  
                 </ul>
               </div>
               </div>
@@ -157,6 +177,7 @@ render(){
                     <Route path='/user/dashboard' exact component={UserDashboard} />
                     <Route exact path='/user/broadcast' component={Broadcast} />
                     <Route exact path='/user/setting' component={Setting} />
+                    <Route exact path='/user/:id' component={PvtChat} />
                   </Switch>
               </div>
            </div>
@@ -171,10 +192,12 @@ const mapStateToProps = (state) =>{
   return{ 
       auth: state.auth,
       chats:state.chatReducer.chat,
+      users:state.chatReducer.users,
+      pvtChats:state.chatReducer.pvtChats
      
   }
 }
 
 export default connect(
-  mapStateToProps,{logoutUser}
+  mapStateToProps,{logoutUser,getPvtMessages}
 )(Dashboard)

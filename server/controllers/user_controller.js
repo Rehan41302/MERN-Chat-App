@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require('../models/user')
+const PrivateChats = require('../models/privateChats')
 const validateRegisterInput = require('../validation/register');
 const validateLoginInput = require('../validation/login');
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
@@ -10,7 +11,20 @@ const authToken = process.env.TWILIO_AUTH_TOKEN;
 // var ip = require("ip");
 module.exports = {
 
-   
+    getUsers(req, res){
+        User.find().exec((err,data)=>{
+            if(err){
+                console.log(err.message)
+                res.status(404).send(err)
+            }
+            else{
+                console.log('Success',data)
+                res.status(200).send(data)
+            }
+        })
+    },
+
+
     register(req, res){
          // Form validation
         const { errors, isValid } = validateRegisterInput(req.body);
