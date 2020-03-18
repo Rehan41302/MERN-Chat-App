@@ -15,7 +15,7 @@ import Login from './login'
 import Dashboard from '../component/user/dashboard.js'
 import NoMatch from './not-found.js'  
 import socketIOClient from "socket.io-client"
-export const socket = socketIOClient("http://localhost:5000");//secret-brook-13268.herokuapp.com
+export const socket = socketIOClient("http://secret-brook-13268.herokuapp.com");//secret-brook-13268.herokuapp.com //localhost:5000
 // import AllImages from './AllImages'
 
 // Check for token to keep user logged in
