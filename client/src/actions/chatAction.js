@@ -7,7 +7,7 @@ import axios from 'axios'
    //ADD IMAGE
 const currStore=store.getState();
    export const getUsers = () => dispatch => {
-     axios.get('/api/users').then(res=>{
+     axios.post('/api/users',{data:0}).then(res=>{
        console.log('Al users===>>>',res.data, currStore)
        dispatch({
          type:GET_USERS,

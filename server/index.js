@@ -203,7 +203,7 @@ setTimeout(()=>{
         // );
 
          app.post('/api/login',userController.login);
-         app.get('/api/users',userController.getUsers);
+         app.post('/api/users',userController.getUsers);
          app.post('/api/privateMessage',chatsController.privateMessage);
 
     
