@@ -181,7 +181,7 @@ render(){
                       this.state.final!=0 ? this.state.final : void 0 
                       } </span> </li> </Link> 
                   {users?
-                  users.map(user=>{
+                   users.map(user=>{
                     if(user._id!==this.props.auth.user.id){
                       return (
                         <Link style={{textDecoration:'none', color:'black'}} to={`/user/${user._id}`} >  <li> <img src={u1} width='40' height='40' style={{margin: '10px'}} />{user.name}</li> </Link>

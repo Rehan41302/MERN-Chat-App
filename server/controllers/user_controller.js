@@ -15,7 +15,7 @@ module.exports = {
         User.find().exec((err,data)=>{
             if(err){
                 console.log(err.message)
-                res.status(404).send(err)
+                
             }
             else{
                 console.log('Success',data)
