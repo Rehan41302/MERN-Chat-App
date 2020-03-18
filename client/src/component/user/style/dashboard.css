@@ -2,8 +2,9 @@ body{
     overflow-x: hidden;
 
 }
+
 #topNavDash{
-    background-color: #673AB7;
+    background-color: #000000;  /* 673AB7 */
     height: 8vh;
 }
 

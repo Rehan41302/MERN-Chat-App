@@ -70,6 +70,7 @@ componentDidMount(){
     })
   }
   if(this.props.users){
+    
     this.setState({
       users:this.props.users
     })
@@ -122,7 +123,25 @@ render(){
            <BrowserRouter>
            <div className='row' id='topNavDash' >
               <div className='col-6' id='navLeft' >
-                 <h2>Growth Mates</h2> 
+
+                    {/* <h2>
+                   <span>Growth</span>
+                    <span>  Mates
+                    </span>
+                  </h2>  */}
+                  
+                {/* Backchodiyan... */}
+                 <h2 style={{fontFamily:'sans-serif',fontWeight:'bold',marginTop:'3px'}}>
+                   <span>Growth</span>
+                    <span style={
+                      { background: '#FF9900',
+                      color: '#000000',borderRadius: '1vw',
+                      padding: '0 7px 3px 0',
+                    marginLeft:'5px'}
+                      }>  Mates
+                    </span>
+                  </h2> 
+
               </div>
               <div className='col-6' id='navRight' style={{zIndex:'9'}} >
                   <h5  type="button" data-toggle="collapse" data-target="#collapseExample"
@@ -163,9 +182,11 @@ render(){
                       } </span> </li> </Link> 
                   {users?
                   users.map(user=>{
-                  return (
-                    <Link style={{textDecoration:'none', color:'black'}} to={`/user/${user._id}`} >  <li> <img src={u1} width='40' height='40' style={{margin: '10px'}} />{user.name}</li> </Link>
-                  )
+                    if(user._id!==this.props.auth.user.id){
+                      return (
+                        <Link style={{textDecoration:'none', color:'black'}} to={`/user/${user._id}`} >  <li> <img src={u1} width='40' height='40' style={{margin: '10px'}} />{user.name}</li> </Link>
+                      )
+                    }
                   })
                     :void 0 }
                   

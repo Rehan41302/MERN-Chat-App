@@ -4,6 +4,8 @@ import { HashLink } from 'react-router-hash-link';
 import smsg from '../images/smsg.png'
 import down from '../images/down.png'
 import gallery from '../images/gallery.png'
+// import loader from '../images/loader.gif'
+import loader from '../images/Spin-1s-144px.gif'
 import './style/broadcast.css'
 import {getChats} from '../../actions/chatAction'
 import { connect } from 'react-redux';
@@ -24,7 +26,8 @@ import {socket} from '../../container/routing'
         file:undefined,
         targeted:false,
         arrow:true,
-        enterArrow:true
+        enterArrow:true,
+        loading:true,
     }
     
 }
@@ -45,6 +48,7 @@ this.setState({
       this.setState({
         chats:this.props.chats,
         targeted:true,
+        loading:false,
       })
     }
     
@@ -66,7 +70,8 @@ componentWillReceiveProps(nextProps){
       console.log(nextProps.chats)
       
         this.setState({
-          chats:nextProps.chats
+          chats:nextProps.chats,
+          loading:false,
         })
     }
   }
@@ -145,6 +150,8 @@ console.log(e.target.files)
     })
 }
 render(){
+  let splits =undefined;
+  
   console.log(this.state)
  
   if(!this.state.user){
@@ -174,13 +181,21 @@ render(){
                   <div className='col-lg-6' >
                     {/* Reciever Section */}
                      <div id='' >
-                      {this.state.chats?
+                      {this.state.loading?<img src={loader} style={{padding:'280px 0 0 300px'}} alt='Loading...'/>
+                       :this.state.chats?
                                  this.state.chats.map((item,index)=>{
+                                  splits = !item.message? void 0 : item.message.match(/(.{1,25})/g)
                                      return(
+                                       
                                       <div id='messTop' >
                                         {item.id==id?
                                          <div id='sender' className='col-12' >
-                                          <p  id='sendtext' >{item.message}</p>
+                                          <p  id='sendtext' >
+                                            {!splits?void 0:
+                                            splits.map(i=>{
+                                           return <span>{i}</span>
+                                            })}
+                                          </p>
                                             {index===chats.length-1  ? <span id='target' ></span> :void 0  }
                                             {/* { this.state.chats!==undefined  ? index===chats.length-1 ? <span id='target' >  sdf </span> :<p>pehla</p>  : <p>dusra</p> } */}
                                            {/* {this.state.targeted} */}
@@ -203,7 +218,7 @@ render(){
  
                      )
                    }) 
-                  :<h1>Loading...</h1> }
+                  :void 0}
                   
                   {this.state.arrow !== false && (this.state.enterArrow!==false)?
                     <HashLink  smooth to='/user/broadcast#target' onClick={() => {this.setState({ arrow:false })} } >                    

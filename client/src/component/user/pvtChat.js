@@ -3,6 +3,7 @@ import {Redirect, BrowserRouter,Route,Switch} from 'react-router-dom'
 import { HashLink } from 'react-router-hash-link';
 import smsg from '../images/smsg.png'
 import down from '../images/down.png'
+import loader from '../images/loader.gif'
 import gallery from '../images/gallery.png'
 import './style/broadcast.css'
 import {getChats,privateMessage} from '../../actions/chatAction'
@@ -28,6 +29,7 @@ import {socket} from '../../container/routing'
         enterArrow:true,
         receiverId:undefined,
         receiverName:undefined,
+        loading:true,
     }
     console.log('Constructor=====')
 }
@@ -53,7 +55,16 @@ componentDidMount(){
                       this.setState({
                         receiverId,
                         receiverName:filtered[0].name,
-                        chats:filterChats[0]
+                        chats:filterChats[0],
+                        loading:false,
+                      })
+                    }
+                    else{
+                      this.setState({
+                        receiverId,
+                        receiverName:filtered[0].name,
+                        chats:undefined,
+                        loading:false,
                       })
                     }
                   }
@@ -109,14 +120,16 @@ componentWillReceiveProps(nextProps){
             this.setState({
               receiverId,
               receiverName:filtered[0].name,
-              chats:filterChats[0]
+              chats:filterChats[0],
+              loading:false,
             })
           }
           else{
             this.setState({
-              receiverId:undefined,
-              receiverName:undefined,
-              chats:undefined
+              receiverId,
+              receiverName:filtered[0].name,
+              chats:undefined,
+              loading:false,
             })
           }
         }
@@ -144,13 +157,25 @@ onEnter = (e) => {
                 receiverId,
                 message,
         }
+        console.log('Current message data',data)
         this.props.privateMessage(data);
         var prev = this.state.chats
-        prev.messages.push({name:this.state.user.name,message:this.state.message})
-        this.setState({
-          message:'',
-          chats:prev
-        })
+        if(!prev){
+          prev={messages:[]}
+          prev.messages.push({name:this.state.user.name,message:this.state.message})
+          this.setState({
+            message:'',
+            chats:prev
+          })
+
+        }
+        else{
+          prev.messages.push({name:this.state.user.name,message:this.state.message})
+            this.setState({
+              message:'',
+              chats:prev
+            })
+        }
 
   }
 }
@@ -170,11 +195,15 @@ console.log('form sy',e.keyCode)
         }
         this.props.privateMessage(data);
         var prev = this.state.chats
-        prev.messages.push({name:this.state.user.name,message:this.state.message})
-        this.setState({
-          message:'',
-          chats:prev
-        })
+
+       if(!prev){
+         prev=[]
+       }
+       prev.messages.push({name:this.state.user.name,message:this.state.message})
+         this.setState({
+           message:'',
+           chats:prev
+         })
         
 
 
@@ -213,7 +242,7 @@ render(){
     console.log('render-----')
   console.log(this.state)
  
-  if(!this.state.user||!this.props.AllUsers||!this.state.chats){
+  if(!this.state.user||!this.props.AllUsers){
     console.log(this.state.user,this.props.AllUsers,this.state.chats)
    return <h1>loading...</h1>
   }
@@ -241,7 +270,8 @@ render(){
                   <div className='col-lg-6' >
                     {/* Reciever Section */}
                      <div id='' >
-                      {this.state.chats?
+                      {this.state.loading?<span style={{display:'flex',justifyContent:'center',alignItems:'center'}}><img src={loader} alt='Loading...'/></span>
+                      :this.state.chats?
                                  this.state.chats.messages.map((item,index)=>{
                                      return(
                                       <div id='messTop' >
@@ -270,7 +300,7 @@ render(){
  
                      )
                    }) 
-                  :<h1>Loading...</h1> }
+                  :void 0 }
                   
                   {this.state.arrow !== false && (this.state.enterArrow!==false)?
                     <HashLink  smooth to='/user/broadcast#target' onClick={() => {this.setState({ arrow:false })} } >                    
