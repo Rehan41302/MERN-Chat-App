@@ -9,6 +9,13 @@ import './style/broadcast.css'
 import {getChats,privateMessage} from '../../actions/chatAction'
 import { connect } from 'react-redux';
 import {socket} from '../../container/routing'
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
+
+
+function Alert(props){
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
  class PvtChat extends Component{
 
@@ -30,6 +37,8 @@ import {socket} from '../../container/routing'
         receiverId:undefined,
         receiverName:undefined,
         loading:true,
+        open:false,
+        err:'',
     }
     console.log('Constructor=====')
 }
@@ -140,6 +149,112 @@ componentWillReceiveProps(nextProps){
  
 }
 
+
+//========================//
+//     image section      //
+//========================//
+checkFileSize=(event)=>{
+  let files = event.target.files
+  let size = 150000 
+  let err = ""; 
+  for(var x = 0; x<files.length; x++) {
+  if (files[x].size > size) {
+   err += 'This file is too large, should be less than 150 KB\n';
+   this.setState({
+    err,
+  })
+ }
+};
+if (err !== '') {
+  event.target.value = null
+  console.log(err)
+  return false
+}
+
+return true;
+
+}
+
+checkMimeType=(event)=>{
+  //getting file object
+  let files = event.target.files 
+  //define message container
+  let err = ''
+  // list allow mime type
+ const types = ['image/png', 'image/jpeg', 'image/gif']
+  // loop access array
+  for(var x = 0; x<files.length; x++) {
+   // compare file type find doesn't matach
+       if (types.every(type => files[x].type !== type)) {
+       // create error message and assign to container   
+       err += files[x].type+' is not a supported format\n';
+       this.setState({
+         err,
+       })
+     }
+   };
+
+ if (err !== '') { // if message not same old that mean has error 
+      event.target.value = null // discard selected file
+      console.log(err)
+       return false; 
+  }
+ return true;
+
+}
+
+imageOnChange=(e)=>{
+  let {image} = this.state;
+
+  // this.setState({image: e.target.value});
+  e.preventDefault();
+  
+  console.log(e.target.files[0])
+    if(this.checkFileSize(e) && this.checkMimeType(e)){
+      let reader = new FileReader();
+      let file = e.target.files[0];
+      // images.push(reader.result)
+      reader.onloadend = () => {
+          // images.push(reader.result)
+          // log(image)
+        this.setState({
+          file: file,
+          image: reader.result
+        });
+      }
+    
+      reader.readAsDataURL(file)
+  }
+  else{
+    this.setState({
+      open:true
+    })
+  }
+}
+
+  imagePicker(){
+    this.refs.fileUploader.click()
+    console.log(this.refs.fileUploader)
+    this.setState({
+        imagePicker: true
+    })
+}
+
+ 
+
+ handleClose = (event, reason) => {
+  this.setState({
+    open:false
+  })
+  // if (reason === 'clickaway') {
+  //   return;
+  }
+
+  
+//===================//
+// Sending Message...//
+//===================//
+
 onEnter = (e) => {
   this.setState({
     enterArrow:false
@@ -150,12 +265,27 @@ onEnter = (e) => {
 
         const {id,name}=this.props.user
         const { receiverId, receiverName, message }=this.state
-        let data={
-                senderName:name,
-                senderId:id,
-                receiverName,
-                receiverId,
-                message,
+        if(!this.state.image){
+          var data={
+            name:this.state.user.name,
+            id:this.state.user.id,
+            message:this.state.message
+          }
+        }
+        else if(!this.state.message){
+          var data={
+            name:this.state.user.name,
+            id:this.state.user.id,
+            image:this.state.image
+          }
+        }
+        else{
+          var data={
+            name:this.state.user.name,
+            id:this.state.user.id,
+            message:this.state.message,
+             image:this.state.image
+          }
         }
         console.log('Current message data',data)
         this.props.privateMessage(data);
@@ -185,13 +315,28 @@ console.log('form sy',e.keyCode)
 
 
         const {id,name}=this.props.user
-        const { receiverId, receiverName, message }=this.state
-        let data={
-                senderName:name,
-                senderId:id,
-                receiverName,
-                receiverId,
-                message,
+        const { receiverId, receiverName, message,image }=this.state
+        if(!this.state.image){
+          var data={
+            name:this.state.user.name,
+            id:this.state.user.id,
+            message:this.state.message
+          }
+        }
+        else if(!this.state.message){
+          var data={
+            name:this.state.user.name,
+            id:this.state.user.id,
+            image:this.state.image
+          }
+        }
+        else{
+          var data={
+            name:this.state.user.name,
+            id:this.state.user.id,
+            message:this.state.message,
+             image:this.state.image
+          }
         }
         this.props.privateMessage(data);
         var prev = this.state.chats
@@ -202,7 +347,8 @@ console.log('form sy',e.keyCode)
        prev.messages.push({name:this.state.user.name,message:this.state.message})
          this.setState({
            message:'',
-           chats:prev
+           chats:prev,
+           image:undefined
          })
         
 
@@ -210,38 +356,11 @@ console.log('form sy',e.keyCode)
 
 
 }
-imageOnChange=(e)=>{
-  let {image} = this.state;
 
-  // this.setState({image: e.target.value});
-  e.preventDefault();
-console.log(e.target.files)
-  let reader = new FileReader();
-  let file = e.target.files[0];
-  // images.push(reader.result)
-  reader.onloadend = () => {
-      // images.push(reader.result)
-      // log(image)
-    this.setState({
-      file: file,
-      image: reader.result
-    });
-  }
-
-  reader.readAsDataURL(file)
-}
-
-
-  imagePicker(){
-    this.refs.fileUploader.click()
-    this.setState({
-        imagePicker: true
-    })
-}
 render(){
     console.log('render-----')
   console.log(this.state)
- 
+  let splits =undefined;
   if(!this.state.user||!this.props.AllUsers){
     console.log(this.state.user,this.props.AllUsers,this.state.chats)
    return <h1>loading...</h1>
@@ -273,11 +392,19 @@ render(){
                       {this.state.loading?<span style={{display:'flex',justifyContent:'center',alignItems:'center'}}><img src={loader} alt='Loading...'/></span>
                       :this.state.chats?
                                  this.state.chats.messages.map((item,index)=>{
+                                  splits = !item.message? void 0 : item.message.match(/(.{1,25})/g)
                                      return(
                                       <div id='messTop' >
                                         {item.name==name?
                                          <div id='sender' className='col-12' >
-                                          <p  id='sendtext' >{item.message}</p>
+                                          <p  id='sendtext' >
+                                          {item.image?<img src={item.image} style={{maxHeight:'300px',maxWidth:'250px',marginBottom:'2px'}}/>:void 0}
+                                           {item.message?
+                                            (!splits?void 0:
+                                            splits.map(i=>{
+                                           return <span>{i}</span>
+                                            })):void 0}
+                                            </p>
                                             {index===chats.length-1  ? <span id='target' ></span> :void 0  }
                                             {/* { this.state.chats!==undefined  ? index===chats.length-1 ? <span id='target' >  sdf </span> :<p>pehla</p>  : <p>dusra</p> } */}
                                            {/* {this.state.targeted} */}
@@ -302,6 +429,7 @@ render(){
                    }) 
                   :void 0 }
                   
+                  {this.state.image?<img src={this.state.image}/>:void 0}
                   {this.state.arrow !== false && (this.state.enterArrow!==false)?
                     <HashLink  smooth to='/user/broadcast#target' onClick={() => {this.setState({ arrow:false })} } >                    
                   <div  id='downArrow'  >
@@ -318,7 +446,7 @@ render(){
                         <form>
                         <input style={!this.state.message? {width:'60vw'} : void 0 } onKeyDown={this.onEnter} value={this.state.message} name='message' onChange={this.onChange.bind(this)}  type='text' id='textField' placeholder='Start Message' />                     
                          <img style={!this.state.message? {right:'-50px'} : void 0 } src={gallery} width='30' height='40' id='gallery' onClick={this.imagePicker.bind(this)} />                    
-                         <input type='file' style={{display:'none'}} ref="fileUploader"  />
+                         <input type='file' style={{display:'none'}} ref="fileUploader" onChange={this.imageOnChange.bind(this)}  />
 
                         </form>
                       </div>
@@ -333,6 +461,11 @@ render(){
                    </div>
                  </div>
               </div>
+              <Snackbar open={this.state.open} autoHideDuration={6000} onClose={this.handleClose.bind(this)}>
+              <Alert onClose={this.handleClose.bind(this)} severity="error">
+                        {this.state.err}!
+              </Alert>
+            </Snackbar>
             </div>
          </>
      )

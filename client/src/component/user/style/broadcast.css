@@ -26,8 +26,10 @@
     position: absolute;
     bottom: 0px;
     background-color: #F0F0F0;
-    width: 900px;
+    /* width: 900px;  */
+    width: 100vw;
     height: 8vh;
+    
 }
 
 #messageSpace{

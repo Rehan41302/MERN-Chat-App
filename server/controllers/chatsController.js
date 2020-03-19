@@ -23,6 +23,7 @@ function sendToReceiver(res,data){
                     messages:[{
                         name:data.senderName,
                         message:data.message,
+                        image:data.image
                     }]
                 }]
             })
@@ -46,6 +47,7 @@ function sendToReceiver(res,data){
                  result.chats[prevIndex].messages.push({
                      name:data.senderName,
                      message:data.message,
+                     image:data.image,
                  })
                  result.markModified("chats");
                  result.save().then(r=>{
@@ -61,6 +63,7 @@ function sendToReceiver(res,data){
                       messages:[{
                           name:data.senderName,
                           message:data.message,
+                          image:data.image,
                       }]
                   })
                   result.markModified("chats");
@@ -84,7 +87,7 @@ module.exports = {
                 senderId,
                 receiverName,
                 receiverId,
-                message } = req.body
+                message,image } = req.body
 
         PrivateChats.findById(senderId).exec((err, data)=>{
             if(!data){
@@ -97,6 +100,7 @@ module.exports = {
                         messages:[{
                             name:senderName,
                             message,
+                            image
                         }]
                     }]
                 })
@@ -117,6 +121,7 @@ module.exports = {
                    data.chats[prevIndex].messages.push({
                        name:senderName,
                        message,
+                       image,
                    })
                    console.log('modified data====>>>',data.chats[prevIndex])
                    data.markModified("chats");
@@ -133,6 +138,7 @@ module.exports = {
                         messages:[{
                             name:senderName,
                             message,
+                            image,
                         }]
                     })
                     data.markModified("chats");
