@@ -98,12 +98,7 @@ io.on("connection", socket => {
   socket.on("Chat", (data) => {
       console.log('initial data called by client=====',data)
          
-            let newUser= new Chats({
-              name:data.name,
-              id:data.id,
-              message:data.message,
-              image:data.image
-            })
+            let newUser= new Chats(data)
             newUser.save().then(res=>{
               viewChats()
               
