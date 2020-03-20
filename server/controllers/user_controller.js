@@ -93,7 +93,7 @@ module.exports = {
                     payload,
                     process.env.secretOrKey,
                     {
-                        expiresIn: 31556926 // 1 year in seconds
+                        expiresIn: 57600//16 hours               31556926 // 1 year in seconds
                     },
                     (err, token) => {
                         res.json({
@@ -133,7 +133,7 @@ module.exports = {
                     payload,
                     process.env.secretOrKey,
                     {
-                        expiresIn: 31556926 // 1 year in seconds
+                        expiresIn: 57600 // 1 year in seconds
                     },
                     (err, token) => {
                         res.redirect("http://localhost:3000?token=" + token);
@@ -169,7 +169,7 @@ module.exports = {
                             payload,
                             process.env.secretOrKey,
                             {
-                                expiresIn: 31556926 // 1 year in seconds
+                                expiresIn: 57600 // 1 year in seconds
                             },
                             (err, token) => {
                                 res.redirect("http://localhost:3000?token=" + token);

@@ -313,7 +313,7 @@ render(){
                                          <div id='sender' className='col-12' >
                                            {/* {item.image?<p id='sendtext' style={{float:'right'}} ><img src={item.image} style={{maxHeight:'300px',maxWidth:'250px'}}/></p>:void 0} */}
                                           <p  id='sendtext' >
-                                             {item.image?<img src={item.image} style={{maxHeight:'300px',maxWidth:'250px',marginBottom:'2px'}}/>:void 0}
+                                             {item.image?<img src={item.image} style={{maxHeight: '300px', maxWidth: '250px',marginBottom:'2px'}}/>:void 0}
                                            {item.message?
                                             (!splits?void 0:
                                             splits.map(i=>{
@@ -359,8 +359,8 @@ render(){
                    <div className='row' >                   
                      <div  className= 'col-lg-10 col-xs-8 col-xs-8'  id='inputDiv' >
                         <form>
-                        <input style={!this.state.message? {width:'60vw'} : void 0 } onKeyDown={this.onEnter} value={this.state.message} name='message' onChange={this.onChange.bind(this)}  type='text' id='textField' placeholder='Start Message' />                     
-                         <img style={!this.state.message? {right:'-50px'} : void 0 } src={gallery} width='30' height='40' id='gallery' onClick={this.imagePicker.bind(this)} />                    
+                        <input style={!this.state.message&&!this.state.image? {width:'60vw'} : void 0 } onKeyDown={this.onEnter} value={this.state.message} name='message' onChange={this.onChange.bind(this)}  type='text' id='textField' placeholder='Start Message' />                     
+                         <img style={!this.state.message&&!this.state.image? {right:'-30px'} : void 0 } src={gallery} width='30' height='40' id='gallery' onClick={this.imagePicker.bind(this)} />                    
                          <input type='file' style={{display:'none'}} ref="fileUploader"  onChange={this.imageOnChange.bind(this)} />
 
                         </form>

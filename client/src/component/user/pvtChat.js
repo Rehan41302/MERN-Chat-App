@@ -3,7 +3,7 @@ import {Redirect, BrowserRouter,Route,Switch} from 'react-router-dom'
 import { HashLink } from 'react-router-hash-link';
 import smsg from '../images/smsg.png'
 import down from '../images/down.png'
-import loader from '../images/loader.gif'
+import loader from '../images/Spin-1s-144px.gif'
 import gallery from '../images/gallery.png'
 import './style/broadcast.css'
 import {getChats,privateMessage} from '../../actions/chatAction'
@@ -38,6 +38,7 @@ function Alert(props){
         receiverName:undefined,
         loading:true,
         open:false,
+        imagePicker:false,
         err:'',
     }
     console.log('Constructor=====')
@@ -241,7 +242,7 @@ imageOnChange=(e)=>{
 }
 
  
-
+//for error Snackbar
  handleClose = (event, reason) => {
   this.setState({
     open:false
@@ -264,49 +265,57 @@ onEnter = (e) => {
     e.preventDefault();
 
         const {id,name}=this.props.user
-        const { receiverId, receiverName, message }=this.state
-        if(!this.state.image){
+        const { receiverId, receiverName, message,image }=this.state
+        // if(!this.state.image){
           var data={
-            name:this.state.user.name,
-            id:this.state.user.id,
-            message:this.state.message
+            senderName:name,
+            senderId:id,
+            receiverName,
+            receiverId,
+            message,
+            image,
           }
-        }
-        else if(!this.state.message){
-          var data={
-            name:this.state.user.name,
-            id:this.state.user.id,
-            image:this.state.image
-          }
-        }
-        else{
-          var data={
-            name:this.state.user.name,
-            id:this.state.user.id,
-            message:this.state.message,
-             image:this.state.image
-          }
-        }
+        // }
+        // else if(!this.state.message){
+        //   var data={
+        //     name:this.state.user.name,
+        //     id:this.state.user.id,
+        //     image:this.state.image
+        //   }
+        // }
+        // else{
+        //   var data={
+        //     name:this.state.user.name,
+        //     id:this.state.user.id,
+        //     message:this.state.message,
+        //      image:this.state.image
+        //   }
+        // }
         console.log('Current message data',data)
         this.props.privateMessage(data);
+
         var prev = this.state.chats
         if(!prev){
           prev={messages:[]}
-          prev.messages.push({name:this.state.user.name,message:this.state.message})
+          prev.messages.push({name,message,image})
           this.setState({
             message:'',
-            chats:prev
+            chats:prev,
+            image:undefined,
           })
 
         }
         else{
-          prev.messages.push({name:this.state.user.name,message:this.state.message})
+          prev.messages.push({name,message,image})
             this.setState({
               message:'',
-              chats:prev
+              chats:prev,
+              image:undefined,
             })
         }
+        
 
+       
   }
 }
 onSend=(e)=>{
@@ -316,40 +325,35 @@ console.log('form sy',e.keyCode)
 
         const {id,name}=this.props.user
         const { receiverId, receiverName, message,image }=this.state
-        if(!this.state.image){
-          var data={
-            name:this.state.user.name,
-            id:this.state.user.id,
-            message:this.state.message
-          }
-        }
-        else if(!this.state.message){
-          var data={
-            name:this.state.user.name,
-            id:this.state.user.id,
-            image:this.state.image
-          }
-        }
-        else{
-          var data={
-            name:this.state.user.name,
-            id:this.state.user.id,
-            message:this.state.message,
-             image:this.state.image
-          }
+        var data={
+          senderName:name,
+          senderId:id,
+          receiverName,
+          receiverId,
+          message,
+          image,
         }
         this.props.privateMessage(data);
-        var prev = this.state.chats
 
-       if(!prev){
-         prev=[]
-       }
-       prev.messages.push({name:this.state.user.name,message:this.state.message})
-         this.setState({
-           message:'',
-           chats:prev,
-           image:undefined
-         })
+        var prev = this.state.chats
+        if(!prev){
+          prev={messages:[]}
+          prev.messages.push({name,message,image})
+          this.setState({
+            message:'',
+            chats:prev,
+            image:undefined,
+          })
+
+        }
+        else{
+          prev.messages.push({name,message,image})
+            this.setState({
+              message:'',
+              chats:prev,
+              image:undefined,
+            })
+        }
         
 
 
@@ -389,7 +393,7 @@ render(){
                   <div className='col-lg-6' >
                     {/* Reciever Section */}
                      <div id='' >
-                      {this.state.loading?<span style={{display:'flex',justifyContent:'center',alignItems:'center'}}><img src={loader} alt='Loading...'/></span>
+                      {this.state.loading?<img src={loader}  style={{padding:'280px 0 0 300px'}} alt='Loading...'/>
                       :this.state.chats?
                                  this.state.chats.messages.map((item,index)=>{
                                   splits = !item.message? void 0 : item.message.match(/(.{1,25})/g)
@@ -429,7 +433,7 @@ render(){
                    }) 
                   :void 0 }
                   
-                  {this.state.image?<img src={this.state.image}/>:void 0}
+                  {this.state.image?<img src={this.state.image} style={{maxHeight:'20vh',maxWidth:'17vw'}}/>:void 0}
                   {this.state.arrow !== false && (this.state.enterArrow!==false)?
                     <HashLink  smooth to='/user/broadcast#target' onClick={() => {this.setState({ arrow:false })} } >                    
                   <div  id='downArrow'  >
@@ -444,9 +448,9 @@ render(){
                    <div className='row' >                   
                      <div  className= 'col-lg-10 col-xs-8 col-xs-8'  id='inputDiv' >
                         <form>
-                        <input style={!this.state.message? {width:'60vw'} : void 0 } onKeyDown={this.onEnter} value={this.state.message} name='message' onChange={this.onChange.bind(this)}  type='text' id='textField' placeholder='Start Message' />                     
-                         <img style={!this.state.message? {right:'-50px'} : void 0 } src={gallery} width='30' height='40' id='gallery' onClick={this.imagePicker.bind(this)} />                    
-                         <input type='file' style={{display:'none'}} ref="fileUploader" onChange={this.imageOnChange.bind(this)}  />
+                        <input style={!this.state.message&&!this.state.image? {width:'60vw'} : void 0 } onKeyDown={this.onEnter} value={this.state.message} name='message' onChange={this.onChange.bind(this)}  type='text' id='textField' placeholder='Start Message' />                     
+                         <img style={!this.state.message&&!this.state.image? {right:'-30px'} : void 0 } src={gallery} width='30' height='40' id='gallery' onClick={this.imagePicker.bind(this)} style={{cursor:'potnter'}} />                    
+                         <input type='file' style={{display:''}} ref="fileUploader" onChange={this.imageOnChange.bind(this)}  />
 
                         </form>
                       </div>
