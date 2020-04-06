@@ -7,21 +7,15 @@ import user from '../images/admin.png'
 import db from '../images/db.png'
 import u1 from '../images/u1.png'
 import u2 from '../images/u2.png'
-import u3 from '../images/u3.png'
-import u4 from '../images/u4.png'
-import u5 from '../images/u5.png'
-import u6 from '../images/u6.png'
-import u7 from '../images/u7.png'
-import u8 from '../images/u8.png'
-import u9 from '../images/u9.png'
-import u10 from '../images/u10.png'
 import bc from '../images/bc.png'
+import moment from 'moment'
 import UserDashboard from './userDashboard'
 import PvtChat from '../user/pvtChat'
 import Broadcast from './broadcast'
 import Setting from './setting'
 import { connect } from 'react-redux';
 import {socket} from '../../container/routing'
+import push from 'push.js'
 
  class Dashboard extends Component{
 
@@ -52,6 +46,17 @@ broadcastRes(){
 
 onLogoutClick = e => {
   e.preventDefault();
+  // setTimeout(()=>{
+  //   push.create("Hello world!", {
+  //     body: "How's it hangin'?",
+  //     icon: '/icon.png',
+  //     timeout: 4000,
+  //     onClick: function () {
+  //         window.focus();
+  //         this.close();
+  //     }
+  // });
+  // },3000)
   this.props.logoutUser();
 };
 
@@ -109,6 +114,7 @@ if(nextProps.chats){
   }
 }
 render(){
+  // console.log(moment().format("dddd, MMMM Do YYYY, h:mm:ss a"))
   let filtered=[];
   let {users} = this.state
    if(this.props.chats){
@@ -124,14 +130,14 @@ render(){
            <div className='row' id='topNavDash' >
               <div className='col-6' id='navLeft' >
 
-                    {/* <h2>
+                    <h2>
                    <span>Growth</span>
                     <span>  Mates
                     </span>
-                  </h2>  */}
+                  </h2> 
                   
                 {/* Backchodiyan... */}
-                 <h2 style={{fontFamily:'sans-serif',fontWeight:'bold',marginTop:'3px'}}>
+                 {/* <h2 style={{fontFamily:'sans-serif',fontWeight:'bold',marginTop:'3px'}}>
                    <span>Growth</span>
                     <span style={
                       { background: '#FF9900',
@@ -140,7 +146,7 @@ render(){
                     marginLeft:'5px'}
                       }>  Mates
                     </span>
-                  </h2> 
+                  </h2>  */}
 
               </div>
               <div className='col-6' id='navRight' style={{zIndex:'9'}} >

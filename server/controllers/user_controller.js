@@ -1,9 +1,11 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require('../models/user')
+const Attendence = require('../models/attendence')
 const PrivateChats = require('../models/privateChats')
 const validateRegisterInput = require('../validation/register');
 const validateLoginInput = require('../validation/login');
+const moment = require('moment')
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 
@@ -75,11 +77,47 @@ module.exports = {
                 if (!user) {
                 return res.status(404).json({ emailnotfound: "Email not found" });
                 }
+               
+
             // Check password
                 bcrypt.compare(password, user.password).then(isMatch => {
                 if (isMatch) {
                     console.log("userID: ",user.id)
         
+                    user.update({status:"online"}).then(res=>{
+                        console.log('succcess online---')
+                        var currentData = moment().format("dddd, Do MMM YYYY")
+                        let loginDetails={
+                            _id:user._id,
+                            name:user.name,
+                            loginTime:moment().format("h:mm:ss a"),
+                            logoutTime:''
+                        }
+                        Attendence.findOne({date:currentData}).exec((err,result)=>{
+                            if(!result){
+                                let attendence = new Attendence({
+                                    date:currentData,
+                                    employees:[loginDetails]
+                                })
+                                attendence.save().then(checkIn=>{
+                                    console.log('New date Attend success===>>>',checkIn)
+                                }).catch(err=>console.log('New attend error===>>',err.message))
+                            }
+                            else if(result){
+                             const filtered = result.employees.filter(e=>{
+                                                return e._id == user._id 
+                                              })
+                                if(filtered.length==0){
+                                    result.employees.push(loginDetails)
+                                    result.markModified('employees');
+                                    result.save().then((data)=>{
+                                        console.log('Updated Attendence==>>',result)
+                                    })
+                                }
+                            }
+                        })
+                    })
+
                     // User matched
                     // Create JWT Payload
                     const payload = {
@@ -113,7 +151,22 @@ module.exports = {
 
   
     logout(req, res){
+        const {id}=req.body;
+        console.log('REquest body id===',req.body)
+        User.findById(id).exec((err,result)=>{
+            if(err){
+                console.log('Error from logout:',err.message)
+                return res.status(404).send(err.message)
+                
+            }
+            else{
+                result.updateOne({status:'offline'}).then(data=>{
+                console.log('Result:..',result)
+                res.status(200).send({success:true})
+            }).catch(err=>console.log*(err.message))
+            }
 
+        })
     },
 
     authGoogleCallback(req,res){

@@ -449,8 +449,8 @@ render(){
                      <div  className= 'col-lg-10 col-xs-8 col-xs-8'  id='inputDiv' >
                         <form>
                         <input style={!this.state.message&&!this.state.image? {width:'60vw'} : void 0 } onKeyDown={this.onEnter} value={this.state.message} name='message' onChange={this.onChange.bind(this)}  type='text' id='textField' placeholder='Start Message' />                     
-                         <img style={!this.state.message&&!this.state.image? {right:'-30px'} : void 0 } src={gallery} width='30' height='40' id='gallery' onClick={this.imagePicker.bind(this)} style={{cursor:'potnter'}} />                    
-                         <input type='file' style={{display:''}} ref="fileUploader" onChange={this.imageOnChange.bind(this)}  />
+                         <img style={this.state.message&&this.state.image? {right:'-30px',cursor:'pointer'} :{cursor:'pointer'} } src={gallery} width='30' height='40' id='gallery' onClick={this.imagePicker.bind(this)} />                    
+                         <input type='file' style={{display:'none'}} ref="fileUploader" onChange={this.imageOnChange.bind(this)}  />
 
                         </form>
                       </div>

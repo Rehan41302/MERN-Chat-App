@@ -6,6 +6,7 @@ import {
   SET_CURRENT_USER,
   USER_LOADING
 } from "./types";
+import store from '../store'
 // Register User
 export const registerUser = (userData, history) => dispatch => {
   axios
@@ -60,12 +61,17 @@ export const setUserLoading = () => {
 };
 // Log user out
 export const logoutUser = () => dispatch => {
-  // Remove token from local storage
-  localStorage.removeItem("jwtToken");
-  // Remove auth header for future requests
-  setAuthToken(false);
-  // Set current user to empty object {} which will set isAuthenticated to false
-  dispatch(setCurrentUser({}));
+  let user = store.getState().auth.user
+  console.log('state form reducer',user)
+  axios.post("/api/logout",{id:user.id}).then(res=>{
+    console.log(res.data)
+    // Remove token from local storage
+    localStorage.removeItem("jwtToken");
+    // Remove auth header for future requests
+    setAuthToken(false);
+    // Set current user to empty object {} which will set isAuthenticated to false
+    dispatch(setCurrentUser({}));
+  }).catch(err=>{console.log('logout error==>>>:' ,err.response.data)})
 };
 
 export const gmailLogin = (token) => dispatch => {

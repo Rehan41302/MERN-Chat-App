@@ -61,7 +61,9 @@ app.use(
 
 
 app.use(bodyParser.json());
-mongoose.connect(process.env.MONGO_URI,{useNewUrlParser:true,useUnifiedTopology:true},(err)=>{
+mongoose.connect(process.env.MONGO_URI,{
+  useNewUrlParser:true,
+  useUnifiedTopology:true},(err)=>{
     if(err){
         console.log('Database Connection Err-------------:',err.message);
         
@@ -198,6 +200,7 @@ setTimeout(()=>{
         // );
 
          app.post('/api/login',userController.login);
+         app.post('/api/logout',userController.logout);
          app.post('/api/users',userController.getUsers);
          app.post('/api/privateMessage',chatsController.privateMessage);
 
@@ -207,6 +210,7 @@ setTimeout(()=>{
 
 
 },200);
+
 
 // Serve static assets if in production
 if (process.env.NODE_ENV === "production") {

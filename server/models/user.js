@@ -23,6 +23,10 @@ const User = new Schema({
     number:{
         type:String,
         // required:true
+    },
+    status:{
+        type:String,
+        default:'offline'
     }
 });
 module.exports = mongoose.model('User1', User);
